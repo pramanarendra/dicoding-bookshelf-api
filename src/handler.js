@@ -32,7 +32,7 @@ const addBooksHandler = (request, h) => {
 
   if (isSuccess) {
     if (name) {
-      if (readPage < pageCount) {
+      if (readPage <= pageCount) {
         const response = h.response({
           status: 'success',
           message: 'Buku berhasil ditambahkan',
@@ -48,7 +48,7 @@ const addBooksHandler = (request, h) => {
         status: 'fail',
         message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
       });
-      response.code(500);
+      response.code(400);
       return response;
     }
 
@@ -56,7 +56,7 @@ const addBooksHandler = (request, h) => {
       status: 'fail',
       message: 'Gagal menambahkan buku. Mohon isi nama buku',
     });
-    response.code(500);
+    response.code(400);
     return response;
   }
 
