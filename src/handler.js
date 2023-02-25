@@ -25,33 +25,8 @@ const addBooksHandler = (request, h) => {
     insertedAt,
     updatedAt,
   };
-
-  books.push(newBook);
-
-  const isSuccess = books.filter((book) => book.id === id).length > 0;
-
-  if (isSuccess) {
-    if (name) {
-      if (readPage <= pageCount) {
-        const response = h.response({
-          status: 'success',
-          message: 'Buku berhasil ditambahkan',
-          data: {
-            bookId: id,
-          },
-        });
-        response.code(201);
-        return response;
-      }
-
-      const response = h.response({
-        status: 'fail',
-        message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
-      });
-      response.code(400);
-      return response;
-    }
-
+  
+  if(!name) {
     const response = h.response({
       status: 'fail',
       message: 'Gagal menambahkan buku. Mohon isi nama buku',
@@ -60,12 +35,45 @@ const addBooksHandler = (request, h) => {
     return response;
   }
 
+  if(readPage > pageCount) {
+    const response = h.response({
+        status: 'fail',
+        message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+      });
+      response.code(400);
+      return response;
+    }
+
+  books.push(newBook);
+  const isSuccess = books.filter((book) => book.id === id).length > 0;
+    
+  if(!isSuccess) {
+    const response = h.response({
+      status: 'fail',
+      message: 'Catatan gagal ditambahkan',
+    });
+    response.code(500);
+    return response;
+  }
+
   const response = h.response({
-    status: 'fail',
-    message: 'Catatan gagal ditambahkan',
+    status: 'success',
+    message: 'Buku berhasil ditambahkan',
+    data: {
+      bookId: id,
+    },
   });
-  response.code(500);
+  response.code(201);
   return response;
 };
 
-module.exports = { addBooksHandler };
+const getAllBooksHandler = () => ({
+  status: 'success',
+  data: {
+    books: books.map(({ id, name, publisher }) => {
+      return {id, name, publisher}
+    }),
+  }
+})
+
+module.exports = { addBooksHandler, getAllBooksHandler };
